@@ -23,6 +23,14 @@ export default function Navbar() {
     }
   };
 
+  function getInitial(username: string = "") {
+    // Pisahkan username berdasarkan spasi
+    const words = username.split(" ");
+    // Ambil huruf pertama dari setiap kata dan gabungkan menjadi string
+    const initials = words.map((word) => word.charAt(0).toUpperCase()).join("");
+    return initials;
+  }
+
   return (
     <>
       <div className="navbar bg-base-100 px-4 sticky top-0 shadow-sm">
@@ -32,7 +40,14 @@ export default function Navbar() {
           </Link>
         </div>
         <div className="navbar-end flex gap-2">
-          <p className="text-base ">{auth?.username}</p>
+          <div className="hidden sm:flex flex-row gap-2 justify-center items-center">
+            <div className="avatar placeholder">
+              <div className="bg-neutral text-neutral-content w-8 rounded-full">
+                <span className="text-xl">{getInitial(auth?.username)}</span>
+              </div>
+            </div>
+            <p className="text-base ">{auth?.username}</p>
+          </div>
           <button onClick={openModal} className="btn btn-error btn-sm text-white">
             Logout
           </button>

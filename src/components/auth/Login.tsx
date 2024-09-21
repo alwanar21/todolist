@@ -54,7 +54,6 @@ export default function Login({ setIsLogin }: authProps) {
           const formattedErrors = formatJoiErrors(error.response?.data);
           setError("username", formattedErrors.username);
           setError("password", formattedErrors.password);
-          console.log(error.response?.data?.errors, "wkwkw");
         } else {
           const errorMessage = error.response?.data?.message || "An unknown error occurred";
           toast.error(errorMessage);
