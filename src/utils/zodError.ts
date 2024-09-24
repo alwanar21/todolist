@@ -17,7 +17,7 @@ interface FormattedError {
   message: string;
 }
 
-export const formatJoiErrors = (
+export const formatZodErrors = (
   validationErrors: ValidationError
 ): Record<string, FormattedError> => {
   return validationErrors.errors.reduce((acc, err) => {

@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { loginUserValidation } from "../../validation/authValidation";
-import { Login as userLogin } from "../../service/auth";
+import { loginUserValidation } from "../../validation/auth-validation";
+import { Login as userLogin } from "../../service/auth-service";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import useSignIn from "react-auth-kit/hooks/useSignIn";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-import { formatJoiErrors } from "../../utils/joi";
+import { formatZodErrors } from "../../utils/zodError";
 
 interface authProps {
   setIsLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,7 +32,7 @@ export default function Login({ setIsLogin }: authProps) {
     setIsLogin(false);
   };
 
-  const mutation = useMutation({
+  const loginMutation = useMutation({
     mutationFn: userLogin,
     onSuccess: (data) => {
       if (
@@ -44,22 +44,20 @@ export default function Login({ setIsLogin }: authProps) {
           userState: data?.data?.data,
         })
       ) {
-        toast.success(`Welcome, ${data?.data?.data.username}!`);
         navigate("/dashboard");
+        toast.success(`Welcome, ${data?.data?.data.username}!`);
       }
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
         if (error.response?.data?.errors) {
-          const formattedErrors = formatJoiErrors(error.response?.data);
+          const formattedErrors = formatZodErrors(error.response?.data);
           setError("username", formattedErrors.username);
           setError("password", formattedErrors.password);
         } else {
           const errorMessage = error.response?.data?.message || "An unknown error occurred";
           toast.error(errorMessage);
         }
-      } else {
-        console.log(error.message);
       }
     },
   });
@@ -75,7 +73,7 @@ export default function Login({ setIsLogin }: authProps) {
     resolver: zodResolver(loginUserValidation),
   });
   const onSubmit: SubmitHandler<loginUserType> = (data) => {
-    mutation.mutate(data);
+    loginMutation.mutate(data);
   };
 
   return (
@@ -87,15 +85,19 @@ export default function Login({ setIsLogin }: authProps) {
             <label className="label">
               <span className="label-text">Username</span>
             </label>
-            <input
-              type="text"
-              placeholder="username"
-              className={`input input-bordered ${
+            <label
+              className={`input input-bordered flex items-center gap-2 ${
                 errors.username?.message && "input-bordered input-error"
               }`}
-              disabled={mutation.isPending ? true : false}
-              {...register("username")}
-            />
+            >
+              <input
+                type="text"
+                placeholder="username"
+                className="grow"
+                disabled={loginMutation.isPending ? true : false}
+                {...register("username")}
+              />
+            </label>
             <div className="label">
               <span className="label-text-alt text-red-500">{errors.username?.message}</span>
             </div>
@@ -113,12 +115,10 @@ export default function Login({ setIsLogin }: authProps) {
                 type={showPassword ? "text" : "password"}
                 className="grow"
                 placeholder="********"
-                disabled={mutation.isPending ? true : false}
+                disabled={loginMutation.isPending ? true : false}
                 {...register("password")}
               />
-              <button onClick={togglePasswordVisibility}>
-                {showPassword ? <IoIosEyeOff /> : <IoIosEye />}
-              </button>
+              <button onClick={togglePasswordVisibility}>{showPassword ? <IoIosEyeOff /> : <IoIosEye />}</button>
             </label>
             <div className="label">
               <span className="label-text-alt text-red-500">{errors.password?.message}</span>
@@ -130,10 +130,10 @@ export default function Login({ setIsLogin }: authProps) {
             </label>
           </div>
           <div className="form-control mt-6">
-            <button className={`btn btn-primary ${mutation.isPending && "btn-disabled"}`}>
-              {mutation.isPending && <span className="loading loading-spinner"></span>}
+            <button className={`btn btn-primary ${loginMutation.isPending && "btn-disabled"}`}>
+              {loginMutation.isPending && <span className="loading loading-spinner"></span>}
               Login
-            </button>{" "}
+            </button>
           </div>
         </form>
       </div>
