@@ -1,10 +1,11 @@
 import moment from "moment";
 import { Task as TaskType } from "../../pages/Dashboard";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { remove } from "../../service/todo";
+import { remove } from "../../service/todo-service";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { useSearchParams } from "react-router-dom";
+import UpdateModal from "./UpdateModal";
 
 interface TaskProps {
   task: TaskType;
@@ -27,7 +28,7 @@ export default function Task({ task, idUser, setIdUser }: TaskProps) {
   };
 
   const mutation = useMutation({
-    mutationFn: (id: number) => remove(id),
+    mutationFn: remove,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["tasks", status] });
       modal.close();
@@ -51,11 +52,9 @@ export default function Task({ task, idUser, setIdUser }: TaskProps) {
             <div className="badge badge-neutral">{task.kelompok}</div>
             <div className="badge badge-neutral">{task.status}</div>
           </div>
-          <div className="card-actions justify-end">
-            <button
-              onClick={() => openModal(task.id)}
-              className={"btn btn-sm btn-error text-white"}
-            >
+          <div className="card-actions justify-end mt-3">
+            <UpdateModal idUser={idUser} setIdUser={setIdUser} userId={task.id} />
+            <button onClick={() => openModal(task.id)} className={"btn btn-sm btn-error text-white"}>
               delete
             </button>
           </div>

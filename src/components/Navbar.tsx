@@ -16,17 +16,15 @@ export default function Navbar() {
     navigate("/");
   };
 
-  const openModal = () => {
-    const modal = document.getElementById("my_modal_5") as HTMLDialogElement;
+  const openModalQuit = () => {
+    const modal = document.getElementById("modal_quit") as HTMLDialogElement;
     if (modal) {
       modal.showModal();
     }
   };
 
   function getInitial(username: string = "") {
-    // Pisahkan username berdasarkan spasi
     const words = username.split(" ");
-    // Ambil huruf pertama dari setiap kata dan gabungkan menjadi string
     const initials = words.map((word) => word.charAt(0).toUpperCase()).join("");
     return initials;
   }
@@ -36,7 +34,7 @@ export default function Navbar() {
       <div className="navbar bg-base-100 px-4 sticky top-0 shadow-sm">
         <div className="navbar-start">
           <Link to={"/dashboard"} className="font-bold text-xl">
-            todolist App
+            todolist
           </Link>
         </div>
         <div className="navbar-end flex gap-2">
@@ -48,14 +46,14 @@ export default function Navbar() {
             </div>
             <p className="text-base ">{auth?.username}</p>
           </div>
-          <button onClick={openModal} className="btn btn-error btn-sm text-white">
+          <button onClick={openModalQuit} className="btn btn-error btn-sm text-white">
             Logout
           </button>
         </div>
       </div>
 
       {/* modal logout */}
-      <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
+      <dialog id="modal_quit" className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">
           <p className="py-4 text-xl">Are you sure you want to log out?</p>
           <div className="modal-action">
